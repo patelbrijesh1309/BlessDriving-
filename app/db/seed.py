@@ -12,6 +12,10 @@ DEFAULT_ROLES = [
         "description": "System administrator with full access.",
     },
     {
+        "name": "SCHEDULER",
+        "description": "Operations staff responsible for lesson scheduling and coordination.",
+    },
+    {
         "name": "INSTRUCTOR",
         "description": "Driving instructor with instructor-specific access.",
     },
@@ -28,17 +32,13 @@ async def seed_roles():
         for role_data in DEFAULT_ROLES:
 
             result = await db.execute(
-                select(Role).where(
-                    Role.name == role_data["name"]
-                )
+                select(Role).where(Role.name == role_data["name"])
             )
 
             existing_role = result.scalar_one_or_none()
 
             if existing_role:
-                print(
-                    f"Role already exists: {role_data['name']}"
-                )
+                print(f"Role already exists: {role_data['name']}")
                 continue
 
             role = Role(
@@ -47,10 +47,7 @@ async def seed_roles():
             )
 
             db.add(role)
-
-            print(
-                f"Creating role: {role_data['name']}"
-            )
+            print(f"Creating role: {role_data['name']}")
 
         await db.commit()
 

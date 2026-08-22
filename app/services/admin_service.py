@@ -21,8 +21,10 @@ class AdminService:
 
     VALID_ROLES = {
         "ADMIN",
+        "SCHEDULER",
         "INSTRUCTOR",
         "STUDENT",
+
     }
 
     @staticmethod

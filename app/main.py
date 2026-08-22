@@ -9,6 +9,7 @@ from app.api.auth import router as auth_router
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.api.admin import router as admin_router
+from app.api.scheduler import router as scheduler_router
 
 
 app = FastAPI(
@@ -20,6 +21,7 @@ app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(student_router)
 app.include_router(instructor_router)
+app.include_router(scheduler_router)
 
 
 @app.get("/health")

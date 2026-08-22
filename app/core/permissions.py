@@ -26,5 +26,6 @@ def require_role(required_role: str):
 
 
 require_admin = require_role("ADMIN")
+require_scheduler = require_role("SCHEDULER")
 require_instructor = require_role("INSTRUCTOR")
 require_student = require_role("STUDENT")
