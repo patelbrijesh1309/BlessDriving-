@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import Date, ForeignKey, Numeric, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
+    from app.models.instructor_language import InstructorLanguage
 
 
 class Instructor(Base):
@@ -57,3 +57,9 @@ class Instructor(Base):
         "User",
         back_populates="instructor",
     )
+
+    languages: Mapped[list["InstructorLanguage"]] = relationship(
+    "InstructorLanguage",
+    back_populates="instructor",
+    cascade="all, delete-orphan",
+    )   

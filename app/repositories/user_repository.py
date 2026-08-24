@@ -1,5 +1,6 @@
-from sqlalchemy import select,func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.role import Role
 from app.models.user import User
@@ -14,7 +15,9 @@ class UserRepository:
         email: str,
     ):
         result = await db.execute(
-            select(User).where(User.email == email)
+            select(User)
+            .options(selectinload(User.roles))
+            .where(User.email == email)
         )
 
         return result.scalar_one_or_none()
@@ -25,7 +28,9 @@ class UserRepository:
         user_id: int,
     ):
         result = await db.execute(
-            select(User).where(User.id == user_id)
+            select(User)
+            .options(selectinload(User.roles))
+            .where(User.id == user_id)
         )
 
         return result.scalar_one_or_none()
@@ -41,29 +46,6 @@ class UserRepository:
         return user
 
     @staticmethod
-    async def get_role_by_name(
-        db: AsyncSession,
-        role_name: str,
-    ):
-        result = await db.execute(
-            select(Role).where(
-                Role.name == role_name
-            )
-        )
-
-        return result.scalar_one_or_none()
-
-    @staticmethod
-    async def assign_role(
-        user: User,
-        role: Role,
-    ):
-        if role not in user.roles:
-            user.roles.append(role)
-
-        return user
-
-    @staticmethod
     async def add(
         db: AsyncSession,
         user: User,
@@ -73,6 +55,16 @@ class UserRepository:
         await db.refresh(user)
         return user
 
+    @staticmethod
+    async def get_role_by_name(
+        db: AsyncSession,
+        role_name: str,
+    ):
+        result = await db.execute(
+            select(Role).where(Role.name == role_name)
+        )
+
+        return result.scalar_one_or_none()
 
     @staticmethod
     async def add_role(
@@ -106,7 +98,12 @@ class UserRepository:
         await db.delete(user)
 
     @staticmethod
-    async def count_users(db: AsyncSession):
-        return await db.scalar(
-            select(func.count()).select_from(User)
-        ) or 0
+    async def count_users(
+        db: AsyncSession,
+    ):
+        return (
+            await db.scalar(
+                select(func.count()).select_from(User)
+            )
+            or 0
+        )

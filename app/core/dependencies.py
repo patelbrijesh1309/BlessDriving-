@@ -55,3 +55,50 @@ async def get_current_user(
         raise credentials_exception
 
     return user
+
+async def require_admin(
+    current_user: User = Depends(get_current_user),
+):
+    if not any(role.name == "ADMIN" for role in current_user.roles):
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required.",
+        )
+
+    return current_user
+
+
+async def require_scheduler(
+    current_user: User = Depends(get_current_user),
+):
+    if not any(role.name == "SCHEDULER" for role in current_user.roles):
+        raise HTTPException(
+            status_code=403,
+            detail="Scheduler access required.",
+        )
+
+    return current_user
+
+
+async def require_instructor(
+    current_user: User = Depends(get_current_user),
+):
+    if not any(role.name == "INSTRUCTOR" for role in current_user.roles):
+        raise HTTPException(
+            status_code=403,
+            detail="Instructor access required.",
+        )
+
+    return current_user
+
+
+async def require_student(
+    current_user: User = Depends(get_current_user),
+):
+    if not any(role.name == "STUDENT" for role in current_user.roles):
+        raise HTTPException(
+            status_code=403,
+            detail="Student access required.",
+        )
+
+    return current_user

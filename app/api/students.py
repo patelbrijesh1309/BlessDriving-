@@ -7,6 +7,13 @@ from app.schemas.student import (
     StudentResponse,
     StudentUpdate,
 )
+
+from app.core.dependencies import get_current_user
+from app.schemas.student_language import (
+    StudentLanguagesUpdateRequest,
+)
+from app.services.student_language_service import StudentLanguageService
+
 from app.services.student_service import StudentService
 
 router = APIRouter(
@@ -53,3 +60,27 @@ async def delete_student(
     db: AsyncSession = Depends(get_db),
 ):
     return await StudentService.delete_student(db, user_id)
+
+@router.put("/me/languages")
+async def update_my_languages(
+    request: StudentLanguagesUpdateRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    return await StudentLanguageService.update_languages(
+        db,
+        current_user.id,
+        request.language_ids,
+        request.primary_language_id,
+    )
+
+
+@router.get("/me/languages")
+async def get_my_languages(
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    return await StudentLanguageService.get_languages(
+        db,
+        current_user.id,
+    )

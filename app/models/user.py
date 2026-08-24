@@ -6,6 +6,8 @@ from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.user_role import UserRole
+
 
 if TYPE_CHECKING:
     from app.models.student import Student
@@ -49,9 +51,9 @@ class User(Base):
         nullable=False,
     )
 
-    roles: Mapped[list[Role]] = relationship(
+    roles: Mapped[list["Role"]] = relationship(
         "Role",
-        secondary="user_roles",
+        secondary=UserRole.__table__,
         back_populates="users",
     )
 
@@ -63,8 +65,8 @@ class User(Base):
     )
 
     instructor: Mapped[Instructor | None] = relationship(
-    "Instructor",
-    back_populates="user",
-    uselist=False,
-    cascade="all, delete-orphan",
-)
+        "Instructor",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )

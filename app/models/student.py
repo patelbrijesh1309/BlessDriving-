@@ -10,6 +10,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
+    from app.models.student_language import StudentLanguage
 
 
 class Student(Base):
@@ -53,4 +54,10 @@ class Student(Base):
     user: Mapped[User] = relationship(
         "User",
         back_populates="student",
+    )
+
+    languages: Mapped[list["StudentLanguage"]] = relationship(
+    "StudentLanguage",
+    back_populates="student",
+    cascade="all, delete-orphan",
     )
