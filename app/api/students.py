@@ -1,19 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.schemas.student import (
-    StudentCreate,
-    StudentResponse,
-    StudentUpdate,
+    StudentRegisterRequest,
+    StudentRegisterResponse,
 )
-
-from app.core.dependencies import get_current_user
-from app.schemas.student_language import (
-    StudentLanguagesUpdateRequest,
-)
+from app.schemas.student_language import StudentLanguagesUpdateRequest
 from app.services.student_language_service import StudentLanguageService
-
 from app.services.student_service import StudentService
 
 router = APIRouter(
@@ -22,44 +17,13 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=StudentResponse)
-async def create_student(
-    data: StudentCreate,
+@router.post("/register", response_model=StudentRegisterResponse)
+async def register_student(
+    data: StudentRegisterRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    return await StudentService.create_student(db, data)
+    return await StudentService.register_student(db, data)
 
-
-@router.get("", response_model=list[StudentResponse])
-async def get_students(
-    db: AsyncSession = Depends(get_db),
-):
-    return await StudentService.get_students(db)
-
-
-@router.get("/{user_id}", response_model=StudentResponse)
-async def get_student(
-    user_id: int,
-    db: AsyncSession = Depends(get_db),
-):
-    return await StudentService.get_student(db, user_id)
-
-
-@router.put("/{user_id}", response_model=StudentResponse)
-async def update_student(
-    user_id: int,
-    data: StudentUpdate,
-    db: AsyncSession = Depends(get_db),
-):
-    return await StudentService.update_student(db, user_id, data)
-
-
-@router.delete("/{user_id}")
-async def delete_student(
-    user_id: int,
-    db: AsyncSession = Depends(get_db),
-):
-    return await StudentService.delete_student(db, user_id)
 
 @router.put("/me/languages")
 async def update_my_languages(

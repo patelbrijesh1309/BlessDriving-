@@ -9,6 +9,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.course_module import CourseModule
+    from app.models.student_enrollment import StudentEnrollment
 
 
 class Course(Base):
@@ -47,6 +48,12 @@ class Course(Base):
 
     modules: Mapped[list["CourseModule"]] = relationship(
         "CourseModule",
+        back_populates="course",
+        cascade="all, delete-orphan",
+    )
+
+    enrollments: Mapped[list["StudentEnrollment"]] = relationship(
+        "StudentEnrollment",
         back_populates="course",
         cascade="all, delete-orphan",
     )

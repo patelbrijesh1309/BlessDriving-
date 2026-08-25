@@ -10,3 +10,4 @@ from app.models.student_language import StudentLanguage
 from app.models.vehicle import Vehicle
 from app.models.course import Course
 from app.models.course_module import CourseModule
+from app.models.student_enrollment import StudentEnrollment

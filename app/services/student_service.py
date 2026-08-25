@@ -1,11 +1,83 @@
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import hash_password
+from app.models.user import User
 from app.repositories.student_repository import StudentRepository
-from app.schemas.student import StudentCreate, StudentUpdate
+from app.repositories.user_repository import UserRepository
+from app.schemas.student import (
+    StudentCreate,
+    StudentUpdate,
+    StudentRegisterRequest,
+)
 
 
 class StudentService:
+
+    @staticmethod
+    async def register_student(
+        db: AsyncSession,
+        data: StudentRegisterRequest,
+    ):
+        try:
+            existing_user = await UserRepository.get_by_email(
+                db,
+                data.email,
+            )
+
+            if existing_user:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Email already exists.",
+                )
+
+            role = await UserRepository.get_role_by_name(
+                db,
+                "STUDENT",
+            )
+
+            if role is None:
+                raise HTTPException(
+                    status_code=500,
+                    detail="STUDENT role not found.",
+                )
+
+            user = User(
+                email=data.email,
+                password_hash=hash_password(data.password),
+                first_name=data.first_name,
+                last_name=data.last_name,
+                is_active=True,
+            )
+
+            await UserRepository.add(db, user)
+            await UserRepository.add_role(db, user, role)
+
+            student_data = StudentCreate(
+                user_id=user.id,
+                phone=data.phone,
+                date_of_birth=data.date_of_birth,
+                address=data.address,
+                pickup_address=data.pickup_address,
+                emergency_contact=data.emergency_contact,
+                notes=data.notes,
+            )
+
+            await StudentRepository.create(db, student_data)
+
+            await db.commit()
+
+            return {
+                "user_id": user.id,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "role": "STUDENT",
+            }
+
+        except Exception:
+            await db.rollback()
+            raise
 
     @staticmethod
     async def create_student(

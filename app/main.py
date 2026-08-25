@@ -14,7 +14,9 @@ from app.api.school_settings import router as school_settings_router
 from app.api.vehicles import router as vehicle_router
 from app.api.courses import router as course_router
 from app.api.course_modules import router as course_module_router
-
+from app.api.student_enrollments import (
+    router as student_enrollment_router,
+)
 app = FastAPI(
     title="BlessDriving API",
     version="1.0.0",
@@ -28,9 +30,19 @@ app.include_router(scheduler_router)
 app.include_router(school_settings_router)
 app.include_router(vehicle_router)
 app.include_router(course_router)
-
 app.include_router(course_module_router)
+app.include_router(student_enrollment_router)
 
+
+
+@app.get("/", tags=["Root"])
+async def root():
+    return {
+        "message": "Welcome to BlessDriving API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/health",
+    }
 @app.get("/health")
 async def health():
     return {
