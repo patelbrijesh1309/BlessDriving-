@@ -20,6 +20,9 @@ from app.api.student_enrollments import (
 app = FastAPI(
     title="BlessDriving API",
     version="1.0.0",
+swagger_ui_parameters={
+        "persistAuthorization": True
+    },
 )
 
 app.include_router(auth_router)

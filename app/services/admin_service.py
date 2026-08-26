@@ -384,3 +384,7 @@ class AdminService:
             "total_students": await StudentRepository.count_students(db),
             "total_instructors": await InstructorRepository.count_instructors(db),
         }
+
+    @classmethod
+    async def create_user(cls, db, data):
+        pass
